@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ابزار محاسبه‌گر اسم بر اساس ابجد و تاریخ تولد</title>
+<meta name="description" content="ابزار آنلاین محاسبه ابجد نام و پیشنهاد خودکار اسم متناسب با تاریخ تولد بر اساس طالع یا عدد هدف، بدون نیاز به محاسبه دستی.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-night:#12172b; --ink-night-2:#1b2140;
+    --parchment:#f3ead9; --gold:#c9a24b; --gold-bright:#e6c675;
+    --clay:#a6522f; --line:rgba(201,162,75,0.35); --good:#3f7a4d; --bad:#a6522f; --mid:#b8862c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--parchment);color:#2a2418;
+    font-family:'Vazirmatn',sans-serif;line-height:1.85;font-size:16.5px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px 60px;}
+  header.top{
+    background:linear-gradient(180deg,var(--ink-night),var(--ink-night-2));
+    color:var(--parchment);padding:44px 0 40px;border-bottom:1px solid var(--gold);
+    margin-bottom:34px;
+  }
+  header.top .wrap{padding-top:0;padding-bottom:0;}
+  h1{font-family:'Aref Ruqaa',serif;font-size:clamp(24px,4vw,32px);margin:0 0 10px;color:var(--parchment);}
+  header.top p{color:#d9cdae;margin:0;font-size:15.5px;max-width:640px;}
+
+  .tabs{display:flex;gap:10px;margin:0 0 24px;flex-wrap:wrap;}
+  .tab-btn{
+    flex:1;min-width:200px;
+    background:#fffdf6;border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;cursor:pointer;font-family:'Vazirmatn';font-size:15px;
+    font-weight:600;color:#5a4f34;text-align:center;transition:.15s;
+  }
+  .tab-btn.active{background:var(--ink-night);color:var(--gold-bright);border-color:var(--ink-night);}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .card{
+    background:#fffdf6;border:1px solid var(--line);border-radius:16px;
+    padding:26px;margin-bottom:24px;
+  }
+  label{display:block;font-weight:600;margin-bottom:6px;font-size:14.5px;color:var(--ink-night);}
+  input[type=text], input[type=number], select{
+    width:100%;padding:11px 14px;border-radius:10px;border:1px solid #d9c99a;
+    background:#fffef9;font-family:'Vazirmatn';font-size:15.5px;margin-bottom:16px;
+  }
+  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  @media(max-width:640px){.row{grid-template-columns:1fr;}}
+  .radio-group{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+  .radio-group label{display:flex;align-items:center;gap:6px;font-weight:500;margin-bottom:0;}
+  button.go{
+    width:100%;padding:14px;border:none;border-radius:12px;
+    background:linear-gradient(180deg,var(--clay),#8a4326);color:#fff;
+    font-family:'Vazirmatn';font-weight:700;font-size:16px;cursor:pointer;
+    box-shadow:0 4px 0 #6f3720;
+  }
+  button.go:active{transform:translateY(2px);box-shadow:0 2px 0 #6f3720;}
+
+  .result-box{margin-top:22px;}
+  .summary{
+    background:var(--ink-night);color:var(--gold-bright);padding:16px 18px;
+    border-radius:12px;margin-bottom:16px;font-size:15px;
+  }
+  .summary b{color:#fff;}
+
+  table{width:100%;border-collapse:collapse;font-size:15px;background:#fffefb;border-radius:10px;overflow:hidden;}
+  th,td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--line);}
+  thead th{background:#eee0bb;color:#3a3120;font-weight:700;}
+  tbody tr:nth-child(even){background:#faf3dd;}
+  .tag{padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:700;color:#fff;}
+  .tag.good{background:var(--good);}
+  .tag.mid{background:var(--mid);}
+  .tag.bad{background:var(--bad);}
+
+  .note{
+    background:#fbf3df;border-right:4px solid var(--clay);border-radius:8px;
+    padding:12px 16px;font-size:14px;color:#5a4f34;margin-top:18px;
+  }
+  .empty{color:#8a7f5e;font-size:14.5px;padding:14px 0;}
+  footer{text-align:center;color:#8a7f5e;font-size:13.5px;margin-top:30px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>ابزار محاسبه‌گر اسم با ابجد</h1>
+    <p>به‌جای محاسبهٔ دستی، این ابزار خودکار ابجد نام‌ها را حساب می‌کند و از میان صدها اسم رایج فارسی، گزینه‌های سازگار با تاریخ تولد را برایتان پیدا می‌کند.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="tabs">
+    <div class="tab-btn active" data-tab="t1">روش اول: بر اساس طالع (ماه تولد)</div>
+    <div class="tab-btn" data-tab="t2">روش دوم: بر اساس عدد هدف</div>
+  </div>
+
+  <!-- TAB 1 -->
+  <div class="panel active" id="t1">
+    <div class="card">
+      <label>نام مادر</label>
+      <input type="text" id="motherName" placeholder="مثلاً: زهرا">
+
+      <label>ماه تولد نوزاد</label>
+      <select id="birthMonth">
+        <option value="1">فروردین (حَمَل - آتش)</option>
+        <option value="2">اردیبهشت (ثَور - خاک)</option>
+        <option value="3">خرداد (جَوزا - باد)</option>
+        <option value="4">تیر (سرطان - آب)</option>
+        <option value="5">مرداد (اَسَد - آتش)</option>
+        <option value="6">شهریور (سنبله - خاک)</option>
+        <option value="7">مهر (میزان - باد)</option>
+        <option value="8">آبان (عقرب - آب)</option>
+        <option value="9">آذر (قوس - آتش)</option>
+        <option value="10">دی (جدی - خاک)</option>
+        <option value="11">بهمن (دلو - باد)</option>
+        <option value="12">اسفند (حوت - آب)</option>
+      </select>
+
+      <label>جنسیت نوزاد</label>
+      <div class="radio-group">
+        <label><input type="radio" name="gender1" value="f" checked> دختر</label>
+        <label><input type="radio" name="gender1" value="m"> پسر</label>
+        <label><input type="radio" name="gender1" value="all"> هر دو</label>
+      </div>
+
+      <label>نوع تطابق</label>
+      <div class="radio-group">
+        <label><input type="radio" name="matchType" value="exact" checked> فقط تطابق دقیق برج</label>
+        <label><input type="radio" name="matchType" value="element"> تطابق دقیق + هم‌عنصر</label>
+      </div>
+
+      <button class="go" onclick="runMethod1()">محاسبه و پیدا کردن اسم</button>
+    </div>
+    <div class="result-box" id="result1"></div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div class="panel" id="t2">
+    <div class="card">
+      <p style="margin-top:0;font-size:14.5px;color:#5a4f34;">
+        این روش نامی را پیدا می‌کند که ابجدش برابر یا نزدیک‌ترین به یک <strong>عدد هدف</strong> باشد. عدد هدف می‌تواند ابجد نام پدر/مادر، یا هر عددی باشد که برایتان معنا دارد. اگر بخواهید، ابزار می‌تواند این عدد را از روی تاریخ تولد پیشنهاد بدهد (جمعِ روز + ماه + مجموع ارقام سال — یکی از روش‌های رایج).
+      </p>
+
+      <label>عدد هدف (اختیاری - اگر خالی بگذارید، از تاریخ تولد ساخته می‌شود)</label>
+      <input type="number" id="targetNumber" placeholder="مثلاً: 144">
+
+      <div class="row">
+        <div>
+          <label>روز تولد</label>
+          <input type="number" id="bDay" min="1" max="31" placeholder="مثلاً 9">
+        </div>
+        <div>
+          <label>ماه تولد</label>
+          <input type="number" id="bMonth" min="1" max="12" placeholder="مثلاً 5">
+        </div>
+        <div>
+          <label>سال تولد</label>
+          <input type="number" id="bYear" min="1300" max="1450" placeholder="مثلاً 1402">
+        </div>
+      </div>
+
+      <label>جنسیت نوزاد</label>
+      <div class="radio-group">
+        <label><input type="radio" name="gender2" value="f" checked> دختر</label>
+        <label><input type="radio" name="gender2" value="m"> پسر</label>
+        <label><input type="radio" name="gender2" value="all"> هر دو</label>
+      </div>
+
+      <button class="go" onclick="runMethod2()">پیدا کردن نزدیک‌ترین اسم‌ها</button>
+    </div>
+    <div class="result-box" id="result2"></div>
+  </div>
+
+  <div class="note">
+    <b>یادآوری:</b> این ابزار صرفاً محاسبات سنتی ابجد را خودکار می‌کند تا از انجام دستی و پرخطا آن بی‌نیاز شوید؛ نتیجه یک پیشنهاد فرهنگی/سنتی است، نه یک حکم علمی قطعی. معیارهایی مثل زیبایی، معنا و سهولت تلفظ نام را همیشه در نظر داشته باشید.
+  </div>
+
+  <footer>ابزار محاسبه‌گر ابجد — برای استفاده در وب‌سایت شما آماده شده است.</footer>
+</div>
+
+<script>
+/* ===== Abjad letter values ===== */
+const ABJAD = {
+  'ا':1,'آ':1,'أ':1,'إ':1,'ب':2,'پ':2,'ت':400,'ث':500,'ج':3,'چ':3,'ح':8,'خ':600,
+  'د':4,'ذ':700,'ر':200,'ز':7,'ژ':7,'س':60,'ش':300,'ص':90,'ض':800,'ط':9,'ظ':900,
+  'ع':70,'غ':1000,'ف':80,'ق':100,'ک':20,'گ':20,'ل':30,'م':40,'ن':50,'و':6,'ه':5,
+  'ة':5,'ی':10,'ي':10,'ى':10,'ئ':10
+};
+function abjad(name){
+  let sum = 0;
+  for (const ch of name.trim()){
+    if (ABJAD[ch] !== undefined) sum += ABJAD[ch];
+  }
+  return sum;
+}
+
+/* ===== Zodiac / month table ===== */
+const ZODIAC = {
+  1:{name:'حَمَل', month:'فروردین', el:'fire'},
+  2:{name:'ثَور', month:'اردیبهشت', el:'earth'},
+  3:{name:'جَوزا', month:'خرداد', el:'air'},
+  4:{name:'سرطان', month:'تیر', el:'water'},
+  5:{name:'اَسَد', month:'مرداد', el:'fire'},
+  6:{name:'سنبله', month:'شهریور', el:'earth'},
+  7:{name:'میزان', month:'مهر', el:'air'},
+  8:{name:'عقرب', month:'آبان', el:'water'},
+  9:{name:'قوس', month:'آذر', el:'fire'},
+  10:{name:'جدی', month:'دی', el:'earth'},
+  11:{name:'دلو', month:'بهمن', el:'air'},
+  12:{name:'حوت', month:'اسفند', el:'water'}
+};
+const FRIEND = {fire:'air', air:'fire', earth:'water', water:'earth'};
+
+/* ===== Name banks ===== */
+const FEMALE = ["زهرا","فاطمه","مریم","سارا","نگار","شیوا","آزاده","پریسا","الناز","ترانه","بهار","شیرین","لیلا","رویا","سمیرا","نیلوفر","مهسا","یگانه","ستاره","پرستو","آیدا","هستی","درسا","رها","آوا","ملیکا","ثنا","النا","رومینا","دیانا","باران","غزل","نازنین","پگاه","پروین","پونه","یاسمن","پریناز","پارمیدا","پرنیا","رزا","رزیتا","ریحانه","ساینا","ستایش","سوگند","شکیبا","صبا","طناز","عسل","فرناز","کیانا","گلناز","لعیا","مانا","مبینا","ملینا","مینا","ناهید","نسیم","نیکا","وانیا","هلیا","یاس","آرزو","بنفشه","پانیذ","ثریا","جیران","حانیه","خورشید","دلارام","ژینا","سایه","سلما","شبنم","کیمیا","گلاره","لیانا","مهرسا","نازلی","نگین","هانیه"];
+const MALE = ["علی","محمد","حسین","رضا","امیر","کیان","آرش","بهرام","پارسا","سینا","دانیال","آرمین","نیما","بردیا","رادین","پویا","شایان","یاسین","آراد","آیین","ایلیا","بامداد","پدرام","پژمان","پوریا","تیرداد","جاوید","حامد","خشایار","داریوش","رستم","روزبه","زانیار","ژوبین","ساسان","سام","سپهر","سهراب","سیاوش","شروین","شهریار","صادق","عرفان","فرزاد","فرهاد","کاوه","کسری","کوروش","کیوان","گیو","ماکان","مانی","مبین","مهدی","مهراد","مهرداد","میلاد","نادر","نوید","هامون","هوتن","هومن","یزدان","یوسف","آرمان","ابراهیم","احسان","ارسلان","اردلان","اشکان","امیرحسین","ایمان","بابک","بهزاد","پرهام","تورج","جمشید"];
+
+/* ===== Tabs ===== */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ===== Method 1: zodiac match ===== */
+function runMethod1(){
+  const mother = document.getElementById('motherName').value.trim();
+  const box = document.getElementById('result1');
+  if (!mother){ box.innerHTML = '<p class="empty">لطفاً نام مادر را وارد کنید.</p>'; return; }
+
+  const motherVal = abjad(mother);
+  const month = parseInt(document.getElementById('birthMonth').value);
+  const gender = document.querySelector('input[name=gender1]:checked').value;
+  const matchType = document.querySelector('input[name=matchType]:checked').value;
+  const targetEl = ZODIAC[month].el;
+
+  let pool = [];
+  if (gender === 'f' || gender === 'all') pool = pool.concat(FEMALE);
+  if (gender === 'm' || gender === 'all') pool = pool.concat(MALE);
+
+  const rows = [];
+  pool.forEach(name=>{
+    const nameVal = abjad(name);
+    const total = nameVal + motherVal;
+    let rem = total % 12;
+    if (rem === 0) rem = 12;
+    const el = ZODIAC[rem].el;
+    let status = null;
+    if (rem === month) status = {label:'تطابق دقیق', cls:'good'};
+    else if (matchType === 'element' && el === targetEl) status = {label:'هم‌عنصر', cls:'mid'};
+    if (status) rows.push({name, nameVal, rem, status});
+  });
+
+  rows.sort((a,b)=> (a.status.cls==='good'?0:1) - (b.status.cls==='good'?0:1) || a.name.localeCompare(b.name,'fa'));
+
+  let html = `<div class="summary">ابجد نام مادر (<b>${mother}</b>) = <b>${motherVal}</b> &nbsp;|&nbsp; طالع هدف: <b>${ZODIAC[month].name} (${ZODIAC[month].month}) - عنصر ${elFa(targetEl)}</b></div>`;
+
+  if (rows.length === 0){
+    html += `<p class="empty">در فهرست فعلی نامی با تطابق دقیق پیدا نشد. گزینهٔ «تطابق دقیق + هم‌عنصر» را امتحان کنید یا نام دلخواه‌تان را در تب دوم بررسی کنید.</p>`;
+  } else {
+    html += `<table><thead><tr><th>نام</th><th>ابجد نام</th><th>باقی‌مانده</th><th>وضعیت</th></tr></thead><tbody>`;
+    rows.slice(0,40).forEach(r=>{
+      html += `<tr><td>${r.name}</td><td>${r.nameVal}</td><td>${r.rem}</td><td><span class="tag ${r.status.cls}">${r.status.label}</span></td></tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  box.innerHTML = html;
+}
+
+function elFa(el){
+  return {fire:'آتش', earth:'خاک', air:'باد', water:'آب'}[el];
+}
+
+/* ===== Method 2: closest to target number ===== */
+function digitSum(n){
+  return String(n).split('').reduce((a,d)=> a + (parseInt(d)||0), 0);
+}
+function runMethod2(){
+  const box = document.getElementById('result2');
+  let target = parseInt(document.getElementById('targetNumber').value);
+  const day = parseInt(document.getElementById('bDay').value);
+  const month = parseInt(document.getElementById('bMonth').value);
+  const year = parseInt(document.getElementById('bYear').value);
+
+  if (!target || isNaN(target)){
+    if (day && month && year){
+      target = day + month + digitSum(year);
+    } else {
+      box.innerHTML = '<p class="empty">لطفاً عدد هدف را وارد کنید یا تاریخ تولد کامل (روز، ماه، سال) را پر کنید.</p>';
+      return;
+    }
+  }
+
+  const gender = document.querySelector('input[name=gender2]:checked').value;
+  let pool = [];
+  if (gender === 'f' || gender === 'all') pool = pool.concat(FEMALE);
+  if (gender === 'm' || gender === 'all') pool = pool.concat(MALE);
+
+  const rows = pool.map(name=>{
+    const val = abjad(name);
+    return {name, val, diff: Math.abs(val - target)};
+  }).sort((a,b)=> a.diff - b.diff);
+
+  let html = `<div class="summary">عدد هدف = <b>${target}</b></div>`;
+  html += `<table><thead><tr><th>نام</th><th>ابجد نام</th><th>فاصله تا عدد هدف</th><th>وضعیت</th></tr></thead><tbody>`;
+  rows.slice(0,20).forEach(r=>{
+    let tag = r.diff===0 ? {l:'برابر دقیق',c:'good'} : r.diff<=15 ? {l:'نزدیک',c:'mid'} : {l:'دور',c:'bad'};
+    html += `<tr><td>${r.name}</td><td>${r.val}</td><td>${r.diff}</td><td><span class="tag ${tag.c}">${tag.l}</span></td></tr>`;
+  });
+  html += `</tbody></table>`;
+  box.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
